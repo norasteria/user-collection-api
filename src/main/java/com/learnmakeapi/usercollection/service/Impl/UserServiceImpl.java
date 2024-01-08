@@ -5,10 +5,12 @@
 package com.learnmakeapi.usercollection.service.Impl;
 
 import com.learnmakeapi.usercollection.dto.UserDTO;
+import com.learnmakeapi.usercollection.exception.UserNotFoundException;
 import com.learnmakeapi.usercollection.model.User;
 import com.learnmakeapi.usercollection.repository.UserRepository;
 import com.learnmakeapi.usercollection.service.UserService;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,14 @@ public class UserServiceImpl implements UserService {
         .map(user -> mapToUserDto(user))
         .collect(Collectors.toList()); // get the stream result to list
 
+  }
+
+  @Override
+  public UserDTO getUserById(UUID id) {
+    User selectedUser = userRepository
+        .findById(id)
+        .orElseThrow(()-> new UserNotFoundException("User", "id", id)); // handle if got undefined user by given id
+    return mapToUserDto(selectedUser);
   }
 
   private User mapToUserModel(UserDTO userDTO){
