@@ -52,6 +52,27 @@ public class UserServiceImpl implements UserService {
     return mapToUserDto(selectedUser);
   }
 
+  @Override
+  public UserDTO updateUser(UUID id, UserDTO userDTO) {
+    // get selected data by given id
+    User selectedUser = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User", "id", id));
+
+    selectedUser.setFirstName(userDTO.getFirstName());
+    selectedUser.setLastName(userDTO.getLastName());
+    selectedUser.setAge(userDTO.getAge());
+    selectedUser.setKtpNumber(userDTO.getKtpNumber());
+
+    User updatedUser = userRepository.save(selectedUser);
+    return mapToUserDto(updatedUser);
+  }
+
+  @Override
+  public void deletePostById(UUID id) {
+    // get selected data by given id
+    User selectedUser = userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User", "id", id));
+    userRepository.delete(selectedUser);
+  }
+
   private User mapToUserModel(UserDTO userDTO){
     User userModel = new User();
     userModel.setFirstName(userDTO.getFirstName());
