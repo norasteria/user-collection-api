@@ -5,6 +5,7 @@
 package com.learnmakeapi.usercollection.service.Impl;
 
 import com.learnmakeapi.usercollection.dto.UserDTO;
+import com.learnmakeapi.usercollection.dto.UserResponseDTO;
 import com.learnmakeapi.usercollection.exception.UserNotFoundException;
 import com.learnmakeapi.usercollection.model.User;
 import com.learnmakeapi.usercollection.repository.UserRepository;
@@ -12,6 +13,9 @@ import com.learnmakeapi.usercollection.service.UserService;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,12 +39,27 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserDTO> getAllUsers() {
-    List<User> allUsers = userRepository.findAll(); // getting all users data from DB
+  public UserResponseDTO getAllUsers(int page, int size) {
+    // configure pageable instance
+    Pageable pageable = PageRequest.of(page, size);
 
-    return allUsers.stream()
+    Page<User> allUsers = userRepository.findAll(pageable); // getting all users data from DB
+
+    List<User> allUsersList = allUsers.getContent();
+
+    List<UserDTO> content =  allUsersList.stream()
         .map(user -> mapToUserDto(user))
         .collect(Collectors.toList()); // get the stream result to list
+
+    UserResponseDTO userResponse = new UserResponseDTO();
+    userResponse.setContent(content);
+    userResponse.setPage(allUsers.getNumber());
+    userResponse.setSize(allUsers.getSize());
+    userResponse.setTotalItems(allUsers.getTotalElements());
+    userResponse.setTotalPages(allUsers.getTotalPages());
+    userResponse.setLast(allUsers.isLast());
+
+    return  userResponse;
 
   }
 

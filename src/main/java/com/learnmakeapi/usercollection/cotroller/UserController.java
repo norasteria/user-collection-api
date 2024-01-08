@@ -1,6 +1,7 @@
 package com.learnmakeapi.usercollection.cotroller;
 
 import com.learnmakeapi.usercollection.dto.UserDTO;
+import com.learnmakeapi.usercollection.dto.UserResponseDTO;
 import com.learnmakeapi.usercollection.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,8 +39,11 @@ public class UserController {
 
   // get all users
   @GetMapping
-  public List<UserDTO> getAllUsers(){
-    return userService.getAllUsers();
+  public UserResponseDTO getAllUsers(
+      @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+      @RequestParam(value = "size", defaultValue = "10", required = false) int size
+  ){
+    return userService.getAllUsers(page, size);
   }
 
   // get user by given id
